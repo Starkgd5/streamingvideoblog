@@ -1,59 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Search, Menu, Bell, User, Loader } from 'lucide-react';
+import { Search, Menu, Bell, User } from 'lucide-react';
+import VideoPlayer from '../components/VideoPlayer';
+import VideoThumbnail from '../components/VideoThumbnail';
+import { useParams } from 'react-router-dom';
 
-const VideoPlayer = ({ video }) => {
-  const videoRef = useRef(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      setIsLoading(true);
-      videoRef.current.load();
-    }
-  }, [video]);
-
-  const handleLoadedData = () => {
-    setIsLoading(false);
-    videoRef.current.play();
-  };
-
-  if (!video) return null;
-  return (
-    <div className="w-full relative">
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-200 bg-opacity-75">
-          <Loader className="w-12 h-12 text-blue-500 animate-spin" />
-        </div>
-      )}
-      <video
-        ref={videoRef}
-        className="w-full aspect-video"
-        controls
-        onLoadedData={handleLoadedData}
-      >
-        <source src={video.file} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      <h2 className="text-xl font-bold mt-4">{video.title}</h2>
-      <p className="text-gray-600 mt-2">{video.description}</p>
-    </div>
-  );
-};
-
-const VideoThumbnail = ({ video, onClick }) => (
-  <div className="flex flex-col cursor-pointer" onClick={() => onClick(video)}>
-    <img 
-      src={video.thumbnail_url} 
-      alt={video.title} 
-      className="w-full object-cover rounded-lg" 
-    />
-    <h3 className="text-sm font-semibold mt-2">{video.title}</h3>
-    <p className="text-xs text-gray-500">{video.author}</p>
-  </div>
-);
-
-const YouTubeLikeInterface = () => {
+const PlayingVideo = () => {
+  const { videoId } = useParams('id');
   const [videos, setVideos] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -63,16 +16,26 @@ const YouTubeLikeInterface = () => {
       try {
         const response = await axios.get('http://localhost:8000/api/videos/');
         setVideos(response.data);
-        if (response.data.length > 0) {
-          setSelectedVideo(response.data[0]);
-        }
       } catch (error) {
         console.error('Error fetching videos:', error);
       }
     };
-
+  
     fetchVideos();
+    setSelectedVideo(null); // Clear initial selection
   }, []);
+
+  useEffect(() => {
+    const fetchVideo = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/videos/${videoId}`);
+        setSelectedVideo(response.data)
+      } catch (error) {
+        console.error('Error fetching videos:', error);
+      }
+    };
+    fetchVideo();
+  }, [videoId]);
 
   const filteredVideos = videos.filter(video =>
     video.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -131,4 +94,4 @@ const YouTubeLikeInterface = () => {
   );
 };
 
-export default YouTubeLikeInterface;
+export default PlayingVideo;
