@@ -8,6 +8,7 @@ const HomePage = () => {
   const [videos, setVideos] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -16,7 +17,8 @@ const HomePage = () => {
         setVideos(response.data);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching videos:', error);
+        setError('Erro ao buscar vídeos. Tente novamente mais tarde.');
+        console.error('Erro ao buscar vídeos:', error.message);
         setLoading(false);
       }
     };
@@ -24,12 +26,14 @@ const HomePage = () => {
     fetchVideos();
   }, []);
 
+  // Filtrar vídeos de acordo com o termo de busca
   const filteredVideos = videos.filter(video =>
     video.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Cabeçalho */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-blue-600">Mars Tube</Link>
@@ -52,11 +56,16 @@ const HomePage = () => {
         </div>
       </header>
 
+      {/* Conteúdo Principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold mb-6">Latest Videos</h1>
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-500 text-xl">
+            {error}
           </div>
         ) : filteredVideos.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

@@ -3,28 +3,29 @@ import axios from 'axios';
 import { Upload, CheckCircle, XCircle } from 'lucide-react';
 
 const VideoUpload = () => {
-  const user = 1
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState(null);
 
+  // Manipula a mudança do arquivo
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
 
+  // Manipula o envio do formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      alert('Please select a file to upload');
+      alert('Por favor, selecione um arquivo para upload');
       return;
     }
+
     setUploading(true);
     setUploadStatus(null);
 
     const formData = new FormData();
-    formData.append('author', user)
     formData.append('file', file);
     formData.append('title', title);
     formData.append('description', description);
@@ -36,8 +37,12 @@ const VideoUpload = () => {
         },
       });
       setUploadStatus('success');
+      // Limpa o formulário após o upload bem-sucedido
+      setFile(null);
+      setTitle('');
+      setDescription('');
     } catch (error) {
-      console.error('Error uploading video:', error);
+      console.error('Erro ao enviar o vídeo:', error.message);
       setUploadStatus('error');
     } finally {
       setUploading(false);
@@ -99,16 +104,18 @@ const VideoUpload = () => {
           {uploading ? 'Uploading...' : 'Upload Video'}
         </button>
       </form>
+
+      {/* Feedback sobre o status do upload */}
       {uploadStatus === 'success' && (
         <div className="mt-4 flex items-center text-green-600">
           <CheckCircle className="h-5 w-5 mr-2" />
-          Video uploaded successfully!
+          Vídeo enviado com sucesso!
         </div>
       )}
       {uploadStatus === 'error' && (
         <div className="mt-4 flex items-center text-red-600">
           <XCircle className="h-5 w-5 mr-2" />
-          Error uploading video. Please try again.
+          Erro ao enviar o vídeo. Por favor, tente novamente.
         </div>
       )}
     </div>

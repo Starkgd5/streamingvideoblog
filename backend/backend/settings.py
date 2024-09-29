@@ -134,10 +134,10 @@ CORS_ALLOW_ALL_ORIGINS = True  # Em produção, especifique os domínios permiti
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        'rest_framework.permissions.AllowAny',
     ]
 }
 
 # Adicione estas configurações para lidar com uploads de arquivos grandes
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+# DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+# FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB

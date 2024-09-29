@@ -6,18 +6,19 @@ const VideoPlayer = ({ video }) => {
     const [isLoading, setIsLoading] = useState(true);
   
     useEffect(() => {
-      if (videoRef.current) {
+      if (video?.file && videoRef.current) {
         setIsLoading(true);
-        videoRef.current.load();
+        videoRef.current.load();  // Recarrega o vídeo ao trocar de vídeo
       }
     }, [video]);
   
     const handleLoadedData = () => {
       setIsLoading(false);
-      videoRef.current.play();
+      // Não iniciar automaticamente; deixar o controle ao usuário
     };
-  
-    if (!video) return null;
+
+    // Retorna null se o vídeo não estiver disponível
+    if (!video || !video.file) return <p className="text-center text-gray-500">No video available.</p>;
     return (
       <div className="w-full relative">
         {isLoading && (
@@ -32,12 +33,14 @@ const VideoPlayer = ({ video }) => {
           onLoadedData={handleLoadedData}
         >
           <source src={video.file} type="video/mp4" />
+          {/* Adiciona mais fontes se houver suporte para outros tipos de vídeos */}
+          {/* Exemplo: <source src={video.file} type="video/webm" /> */}
           Your browser does not support the video tag.
         </video>
-        <h2 className="text-xl font-bold mt-4">{video.title}</h2>
-        <p className="text-gray-600 mt-2">{video.description}</p>
+        <h2 className="text-xl font-bold mt-4">{video.title || 'Untitled Video'}</h2>
+        <p className="text-gray-600 mt-2">{video.description || 'No description available.'}</p>
       </div>
     );
-  };
+};
 
 export default VideoPlayer;

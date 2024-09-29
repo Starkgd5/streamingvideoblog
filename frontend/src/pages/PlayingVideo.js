@@ -6,49 +6,68 @@ import VideoThumbnail from '../components/VideoThumbnail';
 import { useParams } from 'react-router-dom';
 
 const PlayingVideo = () => {
-  const { videoId } = useParams('id');
+  const { id } = useParams();
   const [videos, setVideos] = useState([]);
-  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [video, setVideo] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Função para buscar a lista de vídeos
   useEffect(() => {
     const fetchVideos = async () => {
       try {
         const response = await axios.get('http://localhost:8000/api/videos/');
         setVideos(response.data);
       } catch (error) {
-        console.error('Error fetching videos:', error);
+        console.error('Erro ao buscar vídeos:', error.message);
+        if (error.response) {
+          console.error('Resposta do servidor:', error.response.data);
+        } else if (error.request) {
+          console.error('Nenhuma resposta recebida:', error.request);
+        } else {
+          console.error('Erro na configuração da requisição:', error.message);
+        }
       }
     };
   
     fetchVideos();
-    setSelectedVideo(null); // Clear initial selection
+    setVideo(null); // Limpar a seleção inicial
   }, []);
 
+  // Função para buscar vídeo individual baseado no videoId
   useEffect(() => {
-    const fetchVideo = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8000/api/videos/${videoId}`);
-        setSelectedVideo(response.data)
-      } catch (error) {
-        console.error('Error fetching videos:', error);
-      }
-    };
-    fetchVideo();
-  }, [videoId]);
+    if (id) { // Garantir que videoId existe antes de tentar buscar
+      const fetchVideo = async () => {
+        try {
+          const response = await axios.get(`http://localhost:8000/api/videos/${id}/`);
+          setVideo(response.data);
+        } catch (error) {
+          console.error('Erro ao buscar vídeo específico:', error.message);
+          if (error.response) {
+            console.error('Resposta do servidor:', error.response.data);
+          } else if (error.request) {
+            console.error('Nenhuma resposta recebida:', error.request);
+          } else {
+            console.error('Erro na configuração da requisição:', error.message);
+          }
+        }
+      };
+      fetchVideo();
+    }
+  }, [id]);
 
+  // Filtrando os vídeos de acordo com o termo de busca
   const filteredVideos = videos.filter(video =>
     video.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Header */}
+      {/* Cabeçalho */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center">
             <Menu className="h-6 w-6 mr-4" />
-            <a href="/"><h1 className="text-xl font-bold">Mars Tube</h1></a>
+            <a href="/"><h1 className="text-xl font-bold text-blue-600">Mars Tube</h1></a>
           </div>
           <div className="flex-grow max-w-2xl mx-4">
             <div className="relative">
@@ -69,21 +88,21 @@ const PlayingVideo = () => {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Conteúdo Principal */}
       <main className="flex-grow bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row">
             {/* Video Player */}
             <div className="w-full md:w-2/3 mb-8 md:mb-0 md:pr-8">
-              <VideoPlayer video={selectedVideo} />
+              <VideoPlayer video={video} />
             </div>
 
-            {/* Video List */}
+            {/* Lista de Vídeos */}
             <div className="w-full md:w-1/3">
               <h2 className="text-lg font-semibold mb-4">Related Videos</h2>
               <div className="grid grid-cols-1 gap-4">
                 {filteredVideos.map((video) => (
-                  <VideoThumbnail key={video.id} video={video} onClick={setSelectedVideo} />
+                  <VideoThumbnail key={video.id} video={video} onClick={setVideo} />
                 ))}
               </div>
             </div>

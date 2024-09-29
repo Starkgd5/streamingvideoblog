@@ -9,7 +9,10 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/upload" element={<UploadVideo />} />
-        <Route path='/video/:videoId?' element={<PlayingVideo />} />
+        {/* Rota com parâmetro opcional para o videoId */}
+        <Route path="/video/:id" element={<PlayingVideo />} />
+        {/* Rota de fallback para páginas não encontradas */}
+        <Route path="*" element={<h1>404 - Page Not Found</h1>} />
       </Routes>
     </Router>
   );

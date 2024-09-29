@@ -30,11 +30,11 @@ class Video(models.Model):
 
             # Open the saved image and create a thumbnail
             image = Image.open(temp_file.name)
-            image.thumbnail((320, 180), Image.ANTIALIAS)
+            image.thumbnail((320, 180))  # Removido Image.ANTIALIAS
             
             # Save the thumbnail
-            thumb_name = f'thumb_{self.file.name.split("/")[-1]}.jpg'
-            thumb_path = os.path.join('thumbnails', thumb_name)
+            thumb_name = f'thumb_{os.path.basename(self.file.name)}'  # Usando os.path.basename para melhorar a legibilidade
+            thumb_path = os.path.join('media/thumbnails', thumb_name)
             image.save(thumb_path, 'JPEG')
 
             # Save the thumbnail path to the model field
@@ -43,4 +43,4 @@ class Video(models.Model):
 
             # Clean up the temporary files
             os.unlink(temp_file.name)
-            os.unlink(thumb_path)
+            # Não é necessário deletar thumb_path aqui, pois estamos salvando no modelo.
