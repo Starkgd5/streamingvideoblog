@@ -1,4 +1,5 @@
-from rest_framework import viewsets, parsers
+from rest_framework import parsers, viewsets
+
 from .models import Video
 from .serializers import VideoSerializer
 # from rest_framework.permissions import IsAuthenticatedOrReadOnly
