@@ -5,6 +5,7 @@ from .serializers import VideoSerializer
 
 # from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
+
 class VideoViewSet(viewsets.ModelViewSet):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
