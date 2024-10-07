@@ -1,8 +1,8 @@
 import {
-  Navigate,
   BrowserRouter as Router,
   Route,
   Routes,
+  Navigate,
 } from "react-router-dom";
 import React from "react";
 import HomePage from "./pages/HomePage";
@@ -27,14 +27,34 @@ function App() {
   return (
     <Router>
       <Routes>
-        <ProtectedRoute>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/upload" element={<UploadVideo />} />
-          {/* Rota com parâmetro opcional para o videoId */}
-          <Route path="/video/:id" element={<PlayingVideo />} />
-          {/* Rota de fallback para páginas não encontradas */}
-          <Route path="*" element={<h1>404 - Page Not Found</h1>} />
-        </ProtectedRoute>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/upload"
+          element={
+            <ProtectedRoute>
+              <UploadVideo />
+            </ProtectedRoute>
+          }
+        />
+        {/* Rota com parâmetro opcional para o videoId */}
+        <Route
+          path="/video/:id"
+          element={
+            <ProtectedRoute>
+              <PlayingVideo />
+            </ProtectedRoute>
+          }
+        />
+        {/* Rota de fallback para páginas não encontradas */}
+        <Route path="*" element={<h1>404 - Page Not Found</h1>} />
+
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/register" element={<RegisterAndLogout />} />

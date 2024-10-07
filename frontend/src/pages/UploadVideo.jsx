@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Upload, CheckCircle, XCircle } from 'lucide-react';
+import React, { useState } from "react";
+import axios from "axios";
+import { Upload, CheckCircle, XCircle } from "lucide-react";
 
 const VideoUpload = () => {
   const [file, setFile] = useState(null);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState(null);
 
@@ -18,7 +18,7 @@ const VideoUpload = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      alert('Por favor, selecione um arquivo para upload');
+      alert("Por favor, selecione um arquivo para upload");
       return;
     }
 
@@ -26,24 +26,24 @@ const VideoUpload = () => {
     setUploadStatus(null);
 
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('title', title);
-    formData.append('description', description);
+    formData.append("file", file);
+    formData.append("title", title);
+    formData.append("description", description);
 
     try {
-      await axios.post('http://localhost:8000/api/videos/', formData, {
+      await axios.post("http://localhost:8000/api/videos/", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
-      setUploadStatus('success');
+      setUploadStatus("success");
       // Limpa o formulário após o upload bem-sucedido
       setFile(null);
-      setTitle('');
-      setDescription('');
+      setTitle("");
+      setDescription("");
     } catch (error) {
-      console.error('Erro ao enviar o vídeo:', error.message);
-      setUploadStatus('error');
+      console.error("Erro ao enviar o vídeo:", error.message);
+      setUploadStatus("error");
     } finally {
       setUploading(false);
     }
@@ -54,7 +54,10 @@ const VideoUpload = () => {
       <h2 className="text-2xl font-bold mb-4">Upload Video</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700"
+          >
             Title
           </label>
           <input
@@ -67,7 +70,10 @@ const VideoUpload = () => {
           />
         </div>
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium text-gray-700"
+          >
             Description
           </label>
           <textarea
@@ -79,7 +85,10 @@ const VideoUpload = () => {
           ></textarea>
         </div>
         <div>
-          <label htmlFor="video" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="video"
+            className="block text-sm font-medium text-gray-700"
+          >
             Video File
           </label>
           <input
@@ -101,18 +110,18 @@ const VideoUpload = () => {
           ) : (
             <Upload className="h-5 w-5 mr-3" />
           )}
-          {uploading ? 'Uploading...' : 'Upload Video'}
+          {uploading ? "Uploading..." : "Upload Video"}
         </button>
       </form>
 
       {/* Feedback sobre o status do upload */}
-      {uploadStatus === 'success' && (
+      {uploadStatus === "success" && (
         <div className="mt-4 flex items-center text-green-600">
           <CheckCircle className="h-5 w-5 mr-2" />
           Vídeo enviado com sucesso!
         </div>
       )}
-      {uploadStatus === 'error' && (
+      {uploadStatus === "error" && (
         <div className="mt-4 flex items-center text-red-600">
           <XCircle className="h-5 w-5 mr-2" />
           Erro ao enviar o vídeo. Por favor, tente novamente.

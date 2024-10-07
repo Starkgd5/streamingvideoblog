@@ -1,53 +1,56 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Search, Menu, Bell, User } from 'lucide-react';
-import VideoPlayer from '../components/VideoPlayer';
-import VideoThumbnail from '../components/VideoThumbnail';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Search, Menu, Bell, User } from "lucide-react";
+import VideoPlayer from "../components/VideoPlayer";
+import VideoThumbnail from "../components/VideoThumbnail";
+import { useParams } from "react-router-dom";
 
 const PlayingVideo = () => {
   const { id } = useParams();
   const [videos, setVideos] = useState([]);
   const [video, setVideo] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Função para buscar a lista de vídeos
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/videos/');
+        const response = await axios.get("http://localhost:8000/api/videos/");
         setVideos(response.data);
       } catch (error) {
-        console.error('Erro ao buscar vídeos:', error.message);
+        console.error("Erro ao buscar vídeos:", error.message);
         if (error.response) {
-          console.error('Resposta do servidor:', error.response.data);
+          console.error("Resposta do servidor:", error.response.data);
         } else if (error.request) {
-          console.error('Nenhuma resposta recebida:', error.request);
+          console.error("Nenhuma resposta recebida:", error.request);
         } else {
-          console.error('Erro na configuração da requisição:', error.message);
+          console.error("Erro na configuração da requisição:", error.message);
         }
       }
     };
-  
+
     fetchVideos();
     setVideo(null); // Limpar a seleção inicial
   }, []);
 
   // Função para buscar vídeo individual baseado no videoId
   useEffect(() => {
-    if (id) { // Garantir que videoId existe antes de tentar buscar
+    if (id) {
+      // Garantir que videoId existe antes de tentar buscar
       const fetchVideo = async () => {
         try {
-          const response = await axios.get(`http://localhost:8000/api/videos/${id}/`);
+          const response = await axios.get(
+            `http://localhost:8000/api/videos/${id}/`
+          );
           setVideo(response.data);
         } catch (error) {
-          console.error('Erro ao buscar vídeo específico:', error.message);
+          console.error("Erro ao buscar vídeo específico:", error.message);
           if (error.response) {
-            console.error('Resposta do servidor:', error.response.data);
+            console.error("Resposta do servidor:", error.response.data);
           } else if (error.request) {
-            console.error('Nenhuma resposta recebida:', error.request);
+            console.error("Nenhuma resposta recebida:", error.request);
           } else {
-            console.error('Erro na configuração da requisição:', error.message);
+            console.error("Erro na configuração da requisição:", error.message);
           }
         }
       };
@@ -56,7 +59,7 @@ const PlayingVideo = () => {
   }, [id]);
 
   // Filtrando os vídeos de acordo com o termo de busca
-  const filteredVideos = videos.filter(video =>
+  const filteredVideos = videos.filter((video) =>
     video.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -67,7 +70,9 @@ const PlayingVideo = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center">
             <Menu className="h-6 w-6 mr-4" />
-            <a href="/"><h1 className="text-xl font-bold text-blue-600">Mars Tube</h1></a>
+            <a href="/">
+              <h1 className="text-xl font-bold text-blue-600">Mars Tube</h1>
+            </a>
           </div>
           <div className="flex-grow max-w-2xl mx-4">
             <div className="relative">
@@ -102,7 +107,11 @@ const PlayingVideo = () => {
               <h2 className="text-lg font-semibold mb-4">Related Videos</h2>
               <div className="grid grid-cols-1 gap-4">
                 {filteredVideos.map((video) => (
-                  <VideoThumbnail key={video.id} video={video} onClick={setVideo} />
+                  <VideoThumbnail
+                    key={video.id}
+                    video={video}
+                    onClick={setVideo}
+                  />
                 ))}
               </div>
             </div>

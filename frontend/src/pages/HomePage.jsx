@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
-import { Search, User } from 'lucide-react';
-import VideoCard from '../components/VideoCard';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
+import { Search, User } from "lucide-react";
+import VideoCard from "../components/VideoCard";
 
 const HomePage = () => {
   const [videos, setVideos] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/videos/');
+        const response = await axios.get("http://localhost:8000/api/videos/");
         setVideos(response.data);
         setLoading(false);
       } catch (error) {
-        setError('Erro ao buscar vídeos. Tente novamente mais tarde.');
-        console.error('Erro ao buscar vídeos:', error.message);
+        setError("Erro ao buscar vídeos. Tente novamente mais tarde.");
+        console.error("Erro ao buscar vídeos:", error.message);
         setLoading(false);
       }
     };
@@ -27,7 +27,7 @@ const HomePage = () => {
   }, []);
 
   // Filtrar vídeos de acordo com o termo de busca
-  const filteredVideos = videos.filter(video =>
+  const filteredVideos = videos.filter((video) =>
     video.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -36,7 +36,9 @@ const HomePage = () => {
       {/* Cabeçalho */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold text-blue-600">Mars Tube</Link>
+          <Link to="/" className="text-2xl font-bold text-blue-600">
+            Mars Tube
+          </Link>
           <div className="flex-grow max-w-2xl mx-4">
             <div className="relative">
               <input
@@ -50,7 +52,12 @@ const HomePage = () => {
             </div>
           </div>
           <div className="flex items-center">
-            <Link to="/upload" className="mr-4 text-blue-600 hover:text-blue-800">Upload</Link>
+            <Link
+              to="/upload"
+              className="mr-4 text-blue-600 hover:text-blue-800"
+            >
+              Upload
+            </Link>
             <User className="h-6 w-6" />
           </div>
         </div>
@@ -64,12 +71,10 @@ const HomePage = () => {
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : error ? (
-          <div className="text-center text-red-500 text-xl">
-            {error}
-          </div>
+          <div className="text-center text-red-500 text-xl">{error}</div>
         ) : filteredVideos.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredVideos.map(video => (
+            {filteredVideos.map((video) => (
               <VideoCard key={video.id} video={video} />
             ))}
           </div>
