@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Upload, CheckCircle, XCircle } from "lucide-react";
 
@@ -8,13 +8,21 @@ const VideoUpload = () => {
   const [description, setDescription] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState(null);
+  const [csrfToken, setCsrfToken] = useState("");
 
-  // Manipula a mudança do arquivo
+  useEffect(() => {
+    // Obter o token CSRF quando o componente for montado
+    const getCsrfToken = async () => {
+      const response = await axios.get('http://127.0.0.1:8000/api/csrf/');
+      setCsrfToken(response.data.csrfToken);
+    };
+    getCsrfToken();
+  }, []);
+
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
 
-  // Manipula o envio do formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
@@ -31,13 +39,14 @@ const VideoUpload = () => {
     formData.append("description", description);
 
     try {
-      await axios.post("http://localhost:8000/api/videos/", formData, {
+      await axios.post('http://127.0.0.1:8000/api/videos/', formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          "X-CSRFToken": csrfToken,
         },
+        withCredentials: true, // Importante para enviar cookies de autenticação
       });
       setUploadStatus("success");
-      // Limpa o formulário após o upload bem-sucedido
       setFile(null);
       setTitle("");
       setDescription("");
@@ -53,6 +62,7 @@ const VideoUpload = () => {
     <div className="max-w-md mx-auto mt-10">
       <h2 className="text-2xl font-bold mb-4">Upload Video</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
+        <input type='hidden' />
         <div>
           <label
             htmlFor="title"
@@ -114,7 +124,6 @@ const VideoUpload = () => {
         </button>
       </form>
 
-      {/* Feedback sobre o status do upload */}
       {uploadStatus === "success" && (
         <div className="mt-4 flex items-center text-green-600">
           <CheckCircle className="h-5 w-5 mr-2" />

@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 const VideoCard = ({ video }) => {
   // Verificação para garantir que os dados essenciais estejam presentes
   const thumbnailUrl = video?.thumbnail_url || "default_thumbnail.jpg"; // Pode ser uma imagem padrão se estiver ausente
-  const title = video?.title || "Untitled Video";
-  const description = video?.description || "No description available.";
+  const title = video?.title || "Sem título";
+  const description = video?.description || "Sem descrição.";
+  const author = video?.author || "Autor desconhecido";
   const createdAt = video?.created_at
     ? new Date(video.created_at).toLocaleDateString()
     : "Unknown date";
@@ -26,6 +27,7 @@ const VideoCard = ({ video }) => {
           <p className="text-sm text-gray-600 mb-2 truncate">{description}</p>
           <div className="flex justify-between items-center">
             <span className="text-xs text-gray-500">{createdAt}</span>
+            <span className="text-xs text-gray-500">{author.username}</span>
           </div>
         </div>
       </Link>

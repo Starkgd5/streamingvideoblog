@@ -13,4 +13,18 @@ class VideoViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        file = self.request.FILES.get('file')
+        if file:
+            pass
+        title = self.request.data.get('title')
+        if title:
+            pass
+        description = self.request.data.get('description')
+        if description:
+            pass
+        serializer.save(
+            author=self.request.user,
+            file=file,
+            title=title,
+            description=description
+        )

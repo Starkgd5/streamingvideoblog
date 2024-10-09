@@ -135,15 +135,24 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+AUTH_USER_MODEL = "authentication.User"
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        "rest_framework.permissions.IsAuthenticated",
     ]
 }
 
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWS_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173']  # Adicione o domínio do seu frontend
+
+# # Certifique-se de que estas configurações estejam presentes
+# CSRF_COOKIE_SAMESITE = 'Lax'  # ou 'None' se estiver usando HTTPS
+# SESSION_COOKIE_SAMESITE = 'Lax'  # ou 'None' se estiver usando HTTPS
+# CSRF_COOKIE_HTTPONLY = False  # Permite que o JavaScript acesse o cookie CSRF
+# CSRF_USE_SESSIONS = False  # Use cookies em vez de sessão para CSRF
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
@@ -178,5 +187,5 @@ SIMPLE_JWT = {
 }
 
 # Adicione estas configurações para lidar com uploads de arquivos grandes
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+# DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+# FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB

@@ -3,17 +3,29 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { Search, User } from "lucide-react";
 import VideoCard from "../components/VideoCard";
+import useAxios from "../utils/useAxios";
+import jwtDecode from "jwt-decode";
 
 const HomePage = () => {
   const [videos, setVideos] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const api = useAxios();
+  const token = localStorage.getItem("authTokens");
+
+  if (token) {
+    const decode = jwtDecode(token);
+    var user_id = decode.user_id;
+    var username = decode.username;
+    var full_name = decode.full_name;
+    var image = decode.image;
+  }
 
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/videos/");
+        const response = await api.get("/videos/");
         setVideos(response.data);
         setLoading(false);
       } catch (error) {
