@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Video
-from django.contrib.auth.models import User
+from authentication.models import User
 
 
 class AuthorSerializer(serializers.ModelSerializer):

@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react";
-import { decode } from "jwt-decode";
-import { useHistory } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
@@ -8,16 +8,26 @@ export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
-    user: localStorage.getItem("authTokens")
-      ? decode(localStorage.getItem("authTokens").access)
-      : null,
-    authTokens: localStorage.getItem("authTokens")
-      ? JSON.parse(localStorage.getItem("authTokens"))
-      : null,
+    user: null,
+    authTokens: null,
     loading: true,
   });
 
-  const history = useHistory();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const tokens = localStorage.getItem("authTokens");
+    if (tokens) {
+      const parsedTokens = JSON.parse(tokens);
+      setAuthState({
+        user: jwtDecode(parsedTokens.access),
+        authTokens: parsedTokens,
+        loading: false,
+      });
+    } else {
+      setAuthState((prevState) => ({ ...prevState, loading: false }));
+    }
+  }, []);
 
   const login = async (email, password) => {
     try {
@@ -29,13 +39,13 @@ export const AuthProvider = ({ children }) => {
 
       if (response.ok) {
         const data = await response.json();
-        setAuthState((prevState) => ({
-          ...prevState,
-          user: decode(data.access),
+        setAuthState({
+          user: jwtDecode(data.access),
           authTokens: data,
-        }));
+          loading: false,
+        });
         localStorage.setItem("authTokens", JSON.stringify(data));
-        history.push("/");
+        navigate("/");
         showSuccessNotification("Login Successful");
       } else {
         throw new Error("Login failed");
@@ -55,7 +65,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (response.ok) {
-        history.push("/login");
+        navigate("/login");
         showSuccessNotification("Registration Successful, Login Now");
       } else {
         throw new Error("Registration failed");
@@ -69,27 +79,23 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setAuthState({ user: null, authTokens: null, loading: false });
     localStorage.removeItem("authTokens");
-    history.push("/login");
+    navigate("/login");
     showSuccessNotification("Logged Out");
   };
 
   const showSuccessNotification = (message) => {
-    // Use a notification library instead of swal for a cleaner approach
-    // swal.fire({ title: message, icon: 'success', toast: true, ... });
+    // Implement your notification logic here
+    console.log("Success:", message);
   };
 
   const showErrorNotification = (message) => {
-    // Use a notification library instead of swal for a cleaner approach
-    // swal.fire({ title: message, icon: 'error', toast: true, ... });
+    // Implement your notification logic here
+    console.error("Error:", message);
   };
-
-  useEffect(() => {
-    setAuthState((prevState) => ({ ...prevState, loading: false }));
-  }, []);
 
   return (
     <AuthContext.Provider value={{ ...authState, login, register, logout }}>
-      {authState.loading ? null : children}
+      {!authState.loading && children}
     </AuthContext.Provider>
   );
 };

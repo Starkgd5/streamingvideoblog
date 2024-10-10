@@ -14,15 +14,33 @@ function App() {
     <Router>
       <AuthProvider>
         <Routes>
-          <PrivateRoute component={HomePage} path="/" />
-          <PrivateRoute component={UploadVideo} path="/upload" />
-          {/* Rota com parâmetro opcional para o videoId */}
-          <PrivateRoute component={PlayingVideo} path="//video/:id" />
-          {/* Rota de fallback para páginas não encontradas */}
-          <Route path="*" element={<h1>404 - Page Not Found</h1>} />
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <HomePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/upload"
+            element={
+              <PrivateRoute>
+                <UploadVideo />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/video/:id"
+            element={
+              <PrivateRoute>
+                <PlayingVideo />
+              </PrivateRoute>
+            }
+          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="*" element={<NotFound />}></Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
     </Router>

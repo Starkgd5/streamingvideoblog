@@ -10,136 +10,107 @@ function Registerpage() {
 
   const { registerUser } = useContext(AuthContext);
 
-  console.log(email);
-  console.log(username);
-  console.log(password);
-  console.log(password2);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     registerUser(email, username, password, password2);
   };
 
   return (
-    <div>
-      <>
-        <section className="vh-100" style={{ backgroundColor: "#9A616D" }}>
-          <div className="container py-5 h-100">
-            <div className="row d-flex justify-content-center align-items-center h-100">
-              <div className="col col-xl-10">
-                <div className="card" style={{ borderRadius: "1rem" }}>
-                  <div className="row g-0">
-                    <div className="col-md-6 col-lg-5 d-none d-md-block">
-                      <img
-                        src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp"
-                        alt="login form"
-                        className="img-fluid"
-                        style={{ borderRadius: "1rem 0 0 1rem" }}
-                      />
-                    </div>
-                    <div className="col-md-6 col-lg-7 d-flex align-items-center">
-                      <div className="card-body p-4 p-lg-5 text-black">
-                        <form onSubmit={handleSubmit}>
-                          <div className="d-flex align-items-center mb-3 pb-1">
-                            <i
-                              className="fas fa-cubes fa-2x me-3"
-                              style={{ color: "#ff6219" }}
-                            />
-                            <span className="h2 fw-bold mb-0">
-                              Welcome to <b>Desphixs👋</b>
-                            </span>
-                          </div>
-                          <h5
-                            className="fw-normal mb-3 pb-3"
-                            style={{ letterSpacing: 1 }}
-                          >
-                            Sign Up
-                          </h5>
-                          <div className="form-outline mb-4">
-                            <input
-                              type="email"
-                              id="form2Example17"
-                              className="form-control form-control-lg"
-                              placeholder="Email Address"
-                              onChange={(e) => setEmail(e.target.value)}
-                            />
-                          </div>
-                          <div className="form-outline mb-4">
-                            <input
-                              type="text"
-                              id="form2Example17"
-                              className="form-control form-control-lg"
-                              placeholder="Username"
-                              onChange={(e) => setUsername(e.target.value)}
-                            />
-                          </div>
-                          <div className="form-outline mb-4">
-                            <input
-                              type="password"
-                              id="form2Example17"
-                              className="form-control form-control-lg"
-                              placeholder="Password"
-                              onChange={(e) => setPassword(e.target.value)}
-                            />
-                          </div>
-                          <div className="form-outline mb-4">
-                            <input
-                              type="password"
-                              id="form2Example27"
-                              className="form-control form-control-lg"
-                              placeholder="Confirm Password"
-                              onChange={(e) => setPassword2(e.target.value)}
-                            />
-                          </div>
-                          <div className="pt-1 mb-4">
-                            <button
-                              className="btn btn-dark btn-lg btn-block"
-                              type="submit"
-                            >
-                              Register
-                            </button>
-                          </div>
-                          <a className="small text-muted" href="#!">
-                            Forgot password?
-                          </a>
-                          <p
-                            className="mb-5 pb-lg-2"
-                            style={{ color: "#393f81" }}
-                          >
-                            Already have an account?{" "}
-                            <Link to="/login" style={{ color: "#393f81" }}>
-                              Login Now
-                            </Link>
-                          </p>
-                          <a href="#!" className="small text-muted">
-                            Terms of use.
-                          </a>
-                          <a href="#!" className="small text-muted">
-                            Privacy policy
-                          </a>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+    <div className="min-h-screen bg-gradient-to-r from-purple-700 via-pink-600 to-red-500 flex items-center justify-center">
+      <div className="container mx-auto py-12 px-4 md:flex md:items-center md:justify-center">
+        <div className="w-full max-w-md shadow-2xl rounded-2xl bg-white p-8">
+          <div className="flex justify-center mb-6">
+            <i className="fas fa-cubes fa-3x text-purple-500"></i>
+            <span className="text-4xl font-extrabold text-gray-800 ml-3">
+              Mars Tube
+            </span>
+          </div>
+          <h5 className="text-2xl mb-6 text-gray-600 font-semibold">Sign Up</h5>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-6">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="email"
+                className="shadow-md border-gray-300 rounded-xl w-full py-2 px-4 text-gray-700 
+                focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+                placeholder="youremail@example.com"
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
-          </div>
-        </section>
-        <footer className="bg-light text-center text-lg-start">
-          {/* Copyright */}
-          <div
-            className="text-center p-3"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.2)" }}
-          >
-            © 2019 - till date Copyright:
-            <a className="text-dark" href="https://mdbootstrap.com/">
-              desphixs.com
+            <div className="mb-6">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                className="shadow-md border-gray-300 rounded-xl w-full py-2 px-4 text-gray-700 
+                focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+                placeholder="Username"
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <div className="mb-6">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                className="shadow-md border-gray-300 rounded-xl w-full py-2 px-4 text-gray-700 
+                focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+                placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="mb-6">
+              <label
+                htmlFor="password2"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                id="password2"
+                className="shadow-md border-gray-300 rounded-xl w-full py-2 px-4 text-gray-700 
+                focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+                placeholder="Confirm Password"
+                onChange={(e) => setPassword2(e.target.value)}
+              />
+            </div>
+            <div className="pt-1 mb-4">
+              <button
+                className="w-full bg-purple-500 text-white py-3 rounded-xl hover:bg-purple-600 transition-all duration-300"
+                type="submit"
+              >
+                Register
+              </button>
+            </div>
+            <a className="text-sm text-purple-500" href="#!">
+              Forgot password?
             </a>
-          </div>
-          {/* Copyright */}
-        </footer>
-      </>
+            <p className="text-sm mt-5 text-gray-700">
+              Already have an account?{" "}
+              <Link to="/login" className="text-purple-500 font-semibold">
+                Login Now
+              </Link>
+            </p>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
