@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { Upload, CheckCircle, XCircle } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { Upload, CheckCircle, XCircle, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import useAxios from "../utils/useAxios";
+import { jwtDecode } from "jwt-decode"; // Importação corrigida
 
 const VideoUpload = () => {
   const [file, setFile] = useState(null);
@@ -9,9 +10,24 @@ const VideoUpload = () => {
   const [description, setDescription] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState(null);
+  const api = useAxios();
+
+  const user = useMemo(() => {
+    const token = localStorage.getItem("authTokens");
+    if (token) {
+      const decoded = jwtDecode(token);
+      return {
+        id: decoded.user_id,
+        username: decoded.username,
+        fullName: decoded.full_name,
+        image: decoded.image,
+      };
+    }
+    return null;
+  }, []);
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    setFile(e.target.files[0]); // Corrigido para e.target.files[0]
   };
 
   const handleSubmit = async (e) => {
@@ -30,7 +46,7 @@ const VideoUpload = () => {
     formData.append("description", description);
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/videos/", formData, {
+      await api.post("http://127.0.0.1:8000/api/videos/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -55,24 +71,20 @@ const VideoUpload = () => {
           <Link to="/" className="text-3xl font-extrabold text-purple-600">
             Mars Tube
           </Link>
-          <div className="flex-grow max-w-2xl mx-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search videos"
-                className="w-full px-4 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              <Upload className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+          {user && (
+            <div className="flex items-center">
+              <span className="mr-2 text-gray-800">{user.username}</span>
+              {user.image ? (
+                <img
+                  src={user.image}
+                  alt={user.username}
+                  className="h-8 w-8 rounded-full shadow-lg"
+                />
+              ) : (
+                <User className="h-6 w-6 text-gray-600" />
+              )}
             </div>
-          </div>
-          <div className="flex items-center">
-            <Link
-              to="/upload"
-              className="mr-4 text-purple-600 hover:text-purple-800 font-semibold"
-            >
-              Upload
-            </Link>
-          </div>
+          )}
         </div>
       </header>
 

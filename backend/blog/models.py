@@ -34,6 +34,9 @@ class Video(models.Model):
             
             # Save the thumbnail
             thumb_name = f'thumb_{os.path.basename(self.file.name)}'  # Usando os.path.basename para melhorar a legibilidade
+            # remover a extenção do arquivo
+            thumb_name = thumb_name.replace('.mp4', '.jpg')
+            
             thumb_path = os.path.join('media/thumbnails', thumb_name)
             image.save(thumb_path, 'JPEG')
 

@@ -36,15 +36,17 @@ const HomePage = () => {
       console.error("Error fetching videos:", error);
       setLoading(false);
     }
-  }, [api]);
+  }, []);
 
   useEffect(() => {
     fetchVideos();
-  }, [fetchVideos]);
+  }, []);
 
   const filteredVideos = React.useMemo(() => {
-    return videos.filter((video) =>
-      video.title.toLowerCase().includes(searchTerm.toLowerCase())
+    return videos.filter(
+      (video) =>
+        video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        video.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [videos, searchTerm]);
 

@@ -12,6 +12,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 class VideoSerializer(serializers.ModelSerializer):
     thumbnail_url = serializers.SerializerMethodField()
     author = AuthorSerializer(read_only=True)
+    file = serializers.FileField()
 
     class Meta:
         model = Video
