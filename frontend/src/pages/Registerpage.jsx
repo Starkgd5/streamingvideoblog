@@ -8,11 +8,11 @@ function Registerpage() {
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
 
-  const { registerUser } = useContext(AuthContext);
+  const { register } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    registerUser(email, username, password, password2);
+    register(email, username, password, password2);
   };
 
   return (

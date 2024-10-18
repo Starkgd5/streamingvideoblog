@@ -1,6 +1,8 @@
-import { createContext, useState, useEffect } from "react";
+// AuthContext.js
+import { createContext, useState, useEffect, useCallback } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const AuthContext = createContext();
 
@@ -16,29 +18,31 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const tokens = localStorage.getItem("authTokens");
-    if (tokens) {
-      const parsedTokens = JSON.parse(tokens);
-      setAuthState({
-        user: jwtDecode(parsedTokens.access),
-        authTokens: parsedTokens,
-        loading: false,
-      });
-    } else {
-      setAuthState((prevState) => ({ ...prevState, loading: false }));
-    }
+    const loadAuthState = () => {
+      const tokens = localStorage.getItem("authTokens");
+      if (tokens) {
+        const parsedTokens = JSON.parse(tokens);
+        setAuthState({
+          user: jwtDecode(parsedTokens.access),
+          authTokens: parsedTokens,
+          loading: false,
+        });
+      } else {
+        setAuthState((prevState) => ({ ...prevState, loading: false }));
+      }
+    };
+
+    loadAuthState();
   }, []);
 
-  const login = async (email, password) => {
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/token/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
+  const login = useCallback(
+    async (email, password) => {
+      try {
+        const response = await axios.post("http://127.0.0.1:8000/api/token/", {
+          email,
+          password,
+        });
+        const data = response.data;
         setAuthState({
           user: jwtDecode(data.access),
           authTokens: data,
@@ -46,55 +50,58 @@ export const AuthProvider = ({ children }) => {
         });
         localStorage.setItem("authTokens", JSON.stringify(data));
         navigate("/");
-        showSuccessNotification("Login Successful");
-      } else {
-        throw new Error("Login failed");
+        showNotification("Login Successful", "success");
+      } catch (error) {
+        console.error(error);
+        showNotification("Login failed", "error");
       }
-    } catch (error) {
-      console.error(error);
-      showErrorNotification("Login failed");
-    }
-  };
+    },
+    [navigate]
+  );
 
-  const register = async (email, username, password, password2) => {
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/register/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username, password, password2 }),
-      });
-
-      if (response.ok) {
+  const register = useCallback(
+    async (email, username, password, password2) => {
+      try {
+        await axios.post("http://127.0.0.1:8000/api/register/", {
+          email,
+          username,
+          password,
+          password2,
+        });
         navigate("/login");
-        showSuccessNotification("Registration Successful, Login Now");
-      } else {
-        throw new Error("Registration failed");
+        showNotification("Registration Successful, Login Now", "success");
+      } catch (error) {
+        console.error(error);
+        showNotification("Registration failed", "error");
       }
-    } catch (error) {
-      console.error(error);
-      showErrorNotification("Registration failed");
-    }
-  };
+    },
+    [navigate]
+  );
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setAuthState({ user: null, authTokens: null, loading: false });
     localStorage.removeItem("authTokens");
     navigate("/login");
-    showSuccessNotification("Logged Out");
+    showNotification("Logged Out", "success");
+  }, [navigate]);
+
+  const showNotification = (message, type) => {
+    // Implement your notification logic here
+    console.log(`${type.toUpperCase()}: ${message}`);
   };
 
-  const showSuccessNotification = (message) => {
-    // Implement your notification logic here
-    console.log("Success:", message);
-  };
-
-  const showErrorNotification = (message) => {
-    // Implement your notification logic here
-    console.error("Error:", message);
+  const contextValue = {
+    ...authState,
+    login,
+    register,
+    logout,
+    setUser: (user) => setAuthState((prev) => ({ ...prev, user })),
+    setAuthTokens: (tokens) =>
+      setAuthState((prev) => ({ ...prev, authTokens: tokens })),
   };
 
   return (
-    <AuthContext.Provider value={{ ...authState, login, register, logout }}>
+    <AuthContext.Provider value={contextValue}>
       {!authState.loading && children}
     </AuthContext.Provider>
   );

@@ -1,11 +1,12 @@
-from rest_framework import permissions, generics
+from rest_framework import permissions, generics, response, status
 from authentication.serializers import RegisterSerializer, UserSerializer, \
                           MyTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from authentication.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
-class UserRegisterView(generics.ListAPIView):
+class UserView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -16,24 +17,26 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 
 class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    permission_classes = (permissions.AllowAny,)
-    serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.save()
+            if user:
+                return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = ()
 
-    # def post(self, request):
-    #     # Remove the refresh token from the request data
-    #     request.data.pop('refresh', None)
-
-    #     # Revoke the access token
-    #     self.revoke_token(request.data.get('token'))
-
-    #     return response.Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
-
-    # def revoke_token(self, token):
-    #     # Implement logic to revoke the token based on your token storage mechanism
-    #     # For example, if using the default JWT token storage in Django REST framework, you can use the following:
-    #     BlacklistToken.objects.create(token=token)
+    def post(self, request):
+        try:
+            refresh_token = request.data['refresh']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return response.Response({'message': 'Logout successful'}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception:
+            return response.Response(status=status.HTTP_400_BAD_REQUEST)

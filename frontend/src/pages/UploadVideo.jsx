@@ -1,8 +1,31 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback, useContext } from "react";
 import { Upload, CheckCircle, XCircle, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useAxios from "../utils/useAxios";
-import { jwtDecode } from "jwt-decode"; // Importação corrigida
+import { jwtDecode } from "jwt-decode";
+import AuthContext from "../context/AuthContext";
+
+const AlertComponent = ({ type, message }) => (
+  <div
+    className={`mt-4 p-4 rounded-md ${
+      type === "success"
+        ? "bg-green-100 text-green-700"
+        : "bg-red-100 text-red-700"
+    }`}
+  >
+    <div className="flex items-center">
+      {type === "success" ? (
+        <CheckCircle className="h-5 w-5 mr-2" />
+      ) : (
+        <XCircle className="h-5 w-5 mr-2" />
+      )}
+      <p className="font-semibold">
+        {type === "success" ? "Success" : "Error"}
+      </p>
+    </div>
+    <p className="mt-2">{message}</p>
+  </div>
+);
 
 const VideoUpload = () => {
   const [file, setFile] = useState(null);
@@ -11,11 +34,12 @@ const VideoUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState(null);
   const api = useAxios();
+  const navigate = useNavigate();
+  const { authTokens, setAuthTokens, setUser } = useContext(AuthContext);
 
   const user = useMemo(() => {
-    const token = localStorage.getItem("authTokens");
-    if (token) {
-      const decoded = jwtDecode(token);
+    if (authTokens) {
+      const decoded = jwtDecode(authTokens.access);
       return {
         id: decoded.user_id,
         username: decoded.username,
@@ -24,48 +48,93 @@ const VideoUpload = () => {
       };
     }
     return null;
+  }, [authTokens]);
+
+  const handleFileChange = useCallback((e) => {
+    setFile(e.target.files[0]);
+    setUploadStatus(null);
   }, []);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]); // Corrigido para e.target.files[0]
-  };
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (!file) {
+        setUploadStatus({
+          type: "error",
+          message: "Please select a file to upload",
+        });
+        return;
+      }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!file) {
-      alert("Por favor, selecione um arquivo para upload");
-      return;
-    }
+      setUploading(true);
+      setUploadStatus(null);
 
-    setUploading(true);
-    setUploadStatus(null);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("title", title);
+      formData.append("description", description);
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("title", title);
-    formData.append("description", description);
+      try {
+        const response = await api.post("/videos/", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${authTokens.access}`,
+          },
+        });
+        console.log(response);
 
-    try {
-      await api.post("http://127.0.0.1:8000/api/videos/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      setUploadStatus("success");
-      setFile(null);
-      setTitle("");
-      setDescription("");
-    } catch (error) {
-      console.error("Erro ao enviar o vídeo:", error.message);
-      setUploadStatus("error");
-    } finally {
-      setUploading(false);
-    }
-  };
+        setUploadStatus({
+          type: "success",
+          message: "Video uploaded successfully!",
+        });
+        setFile(null);
+        setTitle("");
+        setDescription("");
+
+        // Optionally, navigate to the video page or home page after successful upload
+        // navigate(`/videos/${response.data.id}`);
+      } catch (error) {
+        console.error(
+          "Error uploading video:",
+          error.response?.data || error.message
+        );
+        if (error.response?.status === 401) {
+          setUploadStatus({
+            type: "error",
+            message: "Authentication failed. Please log in again.",
+          });
+          // Optionally, you can redirect to the login page
+          // navigate('/login');
+        } else {
+          setUploadStatus({
+            type: "error",
+            message: "Error uploading video. Please try again.",
+          });
+        }
+      } finally {
+        setUploading(false);
+      }
+    },
+    [api, file, title, description, authTokens, navigate]
+  );
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-100 via-blue-100 to-purple-100">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">
+            Please log in to upload videos
+          </h2>
+          <Link to="/login" className="text-purple-600 hover:text-purple-800">
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 via-blue-100 to-purple-100">
-      {/* Navbar igual à da página Home */}
       <header className="bg-white shadow-lg sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link to="/" className="text-3xl font-extrabold text-purple-600">
@@ -154,17 +223,11 @@ const VideoUpload = () => {
           </button>
         </form>
 
-        {uploadStatus === "success" && (
-          <div className="mt-4 flex items-center text-green-600">
-            <CheckCircle className="h-5 w-5 mr-2" />
-            Vídeo enviado com sucesso!
-          </div>
-        )}
-        {uploadStatus === "error" && (
-          <div className="mt-4 flex items-center text-red-600">
-            <XCircle className="h-5 w-5 mr-2" />
-            Erro ao enviar o vídeo. Por favor, tente novamente.
-          </div>
+        {uploadStatus && (
+          <AlertComponent
+            type={uploadStatus.type}
+            message={uploadStatus.message}
+          />
         )}
       </main>
     </div>

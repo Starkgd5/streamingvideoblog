@@ -6,6 +6,7 @@ import os
 import tempfile
 from authentication.models import User
 
+
 class Video(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
