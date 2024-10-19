@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 const VideoCard = ({ video }) => {
   // Fallback para garantir que os dados essenciais estejam presentes
-  const thumbnailUrl = video?.thumbnail_url || "default_thumbnail.jpg"; // Fallback para imagem padrão
+  const thumbnail = video?.thumbnail || "default_thumbnail.jpg"; // Fallback para imagem padrão
   const title = video?.title || "Sem título";
   const description = video?.description || "Sem descrição disponível.";
   const author = video?.author?.username || "Autor desconhecido";
@@ -20,7 +20,7 @@ const VideoCard = ({ video }) => {
         aria-label={`Assistir ${title}`}
       >
         <img
-          src={thumbnailUrl}
+          src={thumbnail}
           alt={`Thumbnail do vídeo: ${title}`}
           className="w-full h-48 object-cover"
         />

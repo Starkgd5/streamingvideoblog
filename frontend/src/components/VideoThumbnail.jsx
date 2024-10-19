@@ -5,7 +5,7 @@ const VideoThumbnail = ({ video, onClick }) => {
   if (!video) return null; // Garantir que o vídeo exista
 
   const {
-    thumbnail_url = "/path/to/default-thumbnail.jpg",
+    thumbnail = "/path/to/default-thumbnail.jpg",
     title = "Untitled Video",
     author: { username = "Unknown Author" } = {},
   } = video;
@@ -17,7 +17,7 @@ const VideoThumbnail = ({ video, onClick }) => {
       aria-label={`View details for ${title}`}
     >
       <img
-        src={thumbnail_url}
+        src={thumbnail}
         alt={title}
         className="w-full object-cover rounded-lg"
       />

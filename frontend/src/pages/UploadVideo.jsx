@@ -92,7 +92,7 @@ const VideoUpload = () => {
         setDescription("");
 
         // Optionally, navigate to the video page or home page after successful upload
-        // navigate(`/videos/${response.data.id}`);
+        navigate(`/`);
       } catch (error) {
         console.error(
           "Error uploading video:",
@@ -104,7 +104,7 @@ const VideoUpload = () => {
             message: "Authentication failed. Please log in again.",
           });
           // Optionally, you can redirect to the login page
-          // navigate('/login');
+          navigate("/login");
         } else {
           setUploadStatus({
             type: "error",
@@ -201,6 +201,7 @@ const VideoUpload = () => {
               Video File
             </label>
             <input
+              name="file"
               type="file"
               id="video"
               accept="video/*"
